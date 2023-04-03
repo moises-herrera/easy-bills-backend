@@ -13,5 +13,6 @@ namespace EasyBills.Domain.Entities
         public string Name { get; set; }
         public FinanceAccountType TypeAccount { get; set; }
         public decimal Balance { get; set; }
+        public List<Transaction> Transactions { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace EasyBills.Core.Entity
+﻿using System;
+
+namespace EasyBills.Core.Entity
 {
     public interface IEntity
     {

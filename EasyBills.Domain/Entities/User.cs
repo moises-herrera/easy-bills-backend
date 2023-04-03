@@ -14,5 +14,6 @@ namespace EasyBills.Domain.Entities
         public string Email { get; set; }
         public string Password { get; set; }
         public bool IsEmailVerified { get; set; }
+        public List<Transaction> Transactions { get; set; }
     }
 }
