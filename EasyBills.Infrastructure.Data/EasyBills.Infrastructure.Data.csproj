@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EasyBills.Application\EasyBills.Application.csproj" />
     <ProjectReference Include="..\EasyBills.Core\EasyBills.Core.csproj" />
     <ProjectReference Include="..\EasyBills.Domain\EasyBills.Domain.csproj" />
   </ItemGroup>

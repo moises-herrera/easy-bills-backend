@@ -1,19 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EasyBills.Core.Entity;
+﻿using EasyBills.Core.Entity;
+using EasyBills.Security.Helpers;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EasyBills.Domain.Entities
+namespace EasyBills.Domain.Entities;
+
+public class User : Entity
 {
-    public class User : Entity
-    {
-        public string Name { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public bool IsEmailVerified { get; set; }
-        public List<Transaction> Transactions { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+
+    [NotMapped]
+    private string _password;
+
+    public string Password
+    { 
+        get
+        {
+            return _password;
+        } 
+        set 
+        {
+            _password = EncryptionHelper.Encrypt(value);
+        }
     }
+    public bool IsEmailVerified { get; set; }
+    public List<Transaction> Transactions { get; set; }
+
+    [NotMapped]
+    public string FullName => $"{FirstName} {LastName}";
+    public bool IsValidPassword(string password) => 
+        Password == EncryptionHelper.Encrypt(password);
 }
