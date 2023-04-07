@@ -55,6 +55,15 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateUser(CreateUserDTO createUserDTO)
     {
+        var existingUser = await _userRepository.GetOne(user => user.Email == createUserDTO.Email);
+
+        if (existingUser is not null)
+        {
+            return BadRequest(
+                new ErrorResponse { Error = "Ya existe una cuenta con ese email" }
+                );
+        }
+
         var user = _mapper.Map<User>(createUserDTO);
 
         _userRepository.Add(user);
