@@ -1,9 +1,11 @@
 ﻿using EasyBills.Api.Authorization;
 using EasyBills.Api.Middlewares;
 using EasyBills.Application.Tools;
+using EasyBills.Core.Interfaces;
 using EasyBills.Domain.Entities;
 using EasyBills.Infrastructure.Data.Context;
 using EasyBills.Infrastructure.Data.Repositories;
+using EasyBills.Infrastructure.Data.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -36,6 +38,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddScoped<IRepositoryBase<User>, UserRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();

@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Confirmación de email</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+             /**
+        * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
+        */
+             @media screen {
+                 @font-face {
+                     font-family: 'Source Sans Pro';
+                     font-style: normal;
+                     font-weight: 400;
+                     src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+                 }
+
+                 @font-face {
+                     font-family: 'Source Sans Pro';
+                     font-style: normal;
+                     font-weight: 700;
+                     src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+                 }
+             }
+
+             /**
+        * Avoid browser level font resizing.
+        * 1. Windows Mobile
+        * 2. iOS / OSX
+        */
+             body,
+             table,
+             td,
+             a {
+                 -ms-text-size-adjust: 100%; /* 1 */
+                 -webkit-text-size-adjust: 100%; /* 2 */
+             }
+
+             /**
+        * Remove extra space added to tables and cells in Outlook.
+        */
+             table,
+             td {
+                 mso-table-rspace: 0pt;
+                 mso-table-lspace: 0pt;
+             }
+
+             /**
+        * Better fluid images in Internet Explorer.
+        */
+             img {
+                 -ms-interpolation-mode: bicubic;
+             }
+
+             /**
+        * Remove blue links for iOS devices.
+        */
+             a[x-apple-data-detectors] {
+                 font-family: inherit !important;
+                 font-size: inherit !important;
+                 font-weight: inherit !important;
+                 line-height: inherit !important;
+                 color: inherit !important;
+                 text-decoration: none !important;
+             }
+
+             /**
+        * Fix centering issues in Android 4.4.
+        */
+             div[style*="margin: 16px 0;"] {
+                 margin: 0 !important;
+             }
+
+             body {
+                 width: 100% !important;
+                 height: 100% !important;
+                 padding: 0 !important;
+                 margin: 0 !important;
+             }
+
+             /**
+        * Collapse table borders to avoid space between cells.
+        */
+             table {
+                 border-collapse: collapse !important;
+             }
+
+             a {
+                 color: #1a82e2;
+             }
+
+             img {
+                 height: auto;
+                 line-height: 100%;
+                 text-decoration: none;
+                 border: 0;
+                 outline: none;
+             }
+    </style>
+
+</head>
+<body style="background-color: #f5f8ff;">
+
+    <!-- start preheader -->
+    <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
+        A preheader is the short summary text that follows the subject line when an email is viewed in the inbox.
+    </div>
+    <!-- end preheader -->
+    <!-- start body -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+        <!-- start logo -->
+        <tr>
+            <td align="center" bgcolor="#f5f8ff"">
+                <!--[if (gte mso 9)|(IE)]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin-top: 20px;">
+                    <tr>
+                        <td bgcolor="#fff" align="center" valign="top" style="padding: 36px 24px;">
+                            <a href="#" target="_blank" style="display: inline-block;">
+                                <img src="data:image/png;base64,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"
+                                     alt="Logo" border="0" width="200" style="display: block; width: 200px; max-width: 300px; min-width: 100px;">
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+            </td>
+        </tr>
+        <!-- end logo -->
+        <!-- start hero -->
+        <tr>
+            <td align="center" bgcolor="#f5f8ff">
+                <!--[if (gte mso 9)|(IE)]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                    <tr>
+                        <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
+                            <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Confirma tu dirección de email</h1>
+                        </td>
+                    </tr>
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+            </td>
+        </tr>
+        <!-- end hero -->
+        <!-- start copy block -->
+        <tr>
+            <td align="center" bgcolor="#f5f8ff">
+                <!--[if (gte mso 9)|(IE)]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
+                <tr>
+                <td align="center" valign="top" width="600">
+                <![endif]-->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+
+                    <!-- start copy -->
+                    <tr>
+                        <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+                            <p style="margin: 0;">Haz click en el botón de abajo para confirmar tu dirección de correo electrónico.</p>
+                        </td>
+                    </tr>
+                    <!-- end copy -->
+                    <!-- start button -->
+                    <tr>
+                        <td align="left" bgcolor="#ffffff" style="padding-bottom: 12px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+                                        <table border="0" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                                                    <a href="https://sendgrid.com" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Verificar email</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!-- end button -->
+
+                </table>
+                <!--[if (gte mso 9)|(IE)]>
+                </td>
+                </tr>
+                </table>
+                <![endif]-->
+            </td>
+        </tr>
+        <!-- end copy block -->
+
+    </table>
+    <!-- end body -->
+
+</body>
+</html>
