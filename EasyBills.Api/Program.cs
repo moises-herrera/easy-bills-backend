@@ -29,11 +29,15 @@ builder.Services.AddSwaggerGen(options =>
         Description = "JWT Authorization header",
     });
 });
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 31));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(connectionString, x => x.MigrationsAssembly("EasyBills.Infrastructure.Data"));
+    options.UseMySql(defaultConnection, serverVersion)
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
@@ -48,6 +52,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseLogResponse();
 }
 
 app.UseHttpsRedirection();
@@ -55,7 +60,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseJwtMiddleware();
-app.UseLogResponse();
 
 app.MapControllers();
 
