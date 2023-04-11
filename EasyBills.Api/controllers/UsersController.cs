@@ -9,7 +9,6 @@ using EasyBills.Domain.Users;
 using EasyBills.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using EasyBills.Core.Interfaces;
 
 namespace EasyBills.Api.Controllers;
 
@@ -20,18 +19,15 @@ public class UsersController : ControllerBase
     private readonly IRepositoryBase<User> _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
-    private readonly IEmailService _emailService;
 
     public UsersController(
         IRepositoryBase<User> userRepository, 
         IConfiguration configuration, 
-        IMapper mapper,
-        IEmailService emailService)
+        IMapper mapper)
     {
         _userRepository = userRepository;
         _configuration = configuration;
         _mapper = mapper;
-        _emailService = emailService;
     }
 
     [Authorization]
