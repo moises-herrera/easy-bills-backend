@@ -4,11 +4,9 @@ using EasyBills.Api.Models;
 using EasyBills.Application.Users;
 using EasyBills.Security.Helpers;
 using EasyBills.Domain.Entities;
-using EasyBills.Domain.User;
-using EasyBills.Domain.Users;
-using EasyBills.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using EasyBills.Domain.Interfaces;
 
 namespace EasyBills.Api.Controllers;
 
@@ -16,12 +14,12 @@ namespace EasyBills.Api.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IRepositoryBase<User> _userRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
 
     public UsersController(
-        IRepositoryBase<User> userRepository, 
+        IUserRepository userRepository, 
         IConfiguration configuration, 
         IMapper mapper)
     {
@@ -72,12 +70,19 @@ public class UsersController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateUser(CreateUserDTO updateUserDTO, Guid id)
     {
+        var existingUser = await _userRepository.GetById(id);
+
+        if (existingUser is null)
+        {
+            return NotFound(new ErrorResponse { Error = "El usuario no existe" });
+        }
+
         var user = _mapper.Map<User>(updateUserDTO);
         user.Id = id;
         _userRepository.Update(user);
         await _userRepository.SaveChanges();
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorization]
@@ -88,13 +93,13 @@ public class UsersController : ControllerBase
 
         if (user is null)
         {
-            return NotFound();
+            return NotFound(new ErrorResponse { Error = "El usuario no existe" });
         }
 
         _userRepository.Remove(user);
         await _userRepository.SaveChanges();
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpPost("login")]

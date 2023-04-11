@@ -2,7 +2,7 @@
 using EasyBills.Api.Middlewares;
 using EasyBills.Application.Tools;
 using EasyBills.Core.Interfaces;
-using EasyBills.Domain.Entities;
+using EasyBills.Domain.Interfaces;
 using EasyBills.Infrastructure.Data.Context;
 using EasyBills.Infrastructure.Data.Repositories;
 using EasyBills.Infrastructure.Data.Services;
@@ -41,7 +41,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
-builder.Services.AddScoped<IRepositoryBase<User>, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 

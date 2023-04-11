@@ -1,4 +1,4 @@
-﻿namespace EasyBills.Domain.User;
+﻿namespace EasyBills.Application.Users;
 
 public record CreateUserDTO(
     string FirstName,

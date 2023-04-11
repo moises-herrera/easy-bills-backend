@@ -1,6 +1,6 @@
 ﻿using EasyBills.Domain.Entities;
 
-namespace EasyBills.Domain.Users;
+namespace EasyBills.Application.Users;
 
 public class UserDTO
 {

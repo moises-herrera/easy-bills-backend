@@ -1,4 +1,4 @@
-﻿using EasyBills.Domain.Users;
+﻿using EasyBills.Application.Users;
 
 namespace EasyBills.Api.Models;
 

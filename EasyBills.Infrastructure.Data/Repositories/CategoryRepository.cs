@@ -4,11 +4,10 @@ using EasyBills.Infrastructure.Data.Context;
 
 namespace EasyBills.Infrastructure.Data.Repositories;
 
-public class UserRepository : RepositoryBase<User>, IUserRepository
+public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
 {
-    public UserRepository(ApplicationDbContext context)
-        : base(context)
+    public CategoryRepository(ApplicationDbContext dbContext) 
+        : base(dbContext)
     {
-        
     }
 }
