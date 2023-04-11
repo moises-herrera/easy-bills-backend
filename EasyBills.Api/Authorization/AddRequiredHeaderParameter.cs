@@ -5,8 +5,16 @@ using System.Reflection;
 
 namespace EasyBills.Api.Authorization;
 
+/// <summary>
+/// Represents a required header used for swaggerUI.
+/// </summary>
 public class AddRequiredHeaderParameter : IOperationFilter
 {
+    /// <summary>
+    /// Add required header parameter.
+    /// </summary>
+    /// <param name="operation">Current operation.</param>
+    /// <param name="context">Operation context.</param>
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor descriptor)

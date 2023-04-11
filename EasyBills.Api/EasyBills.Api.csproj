@@ -22,4 +22,9 @@
     <ProjectReference Include="..\EasyBills.Infrastructure.Data\EasyBills.Infrastructure.Data.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
 </Project>

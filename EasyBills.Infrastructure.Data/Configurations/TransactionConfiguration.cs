@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EasyBills.Infrastructure.Data.Configurations;
 
+/// <summary>
+/// Transaction entity configuration.
+/// </summary>
 public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 {
+    /// <summary>
+    /// Configure the transaction entity.
+    /// </summary>
+    /// <param name="builder">Transaction builder.</param>
     public void Configure(EntityTypeBuilder<Transaction> builder)
     {
         builder.HasKey(t => t.Id);

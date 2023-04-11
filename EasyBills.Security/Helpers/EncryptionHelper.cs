@@ -3,8 +3,16 @@ using System.Text;
 
 namespace EasyBills.Security.Helpers;
 
+/// <summary>
+/// Encryption methods.
+/// </summary>
 public class EncryptionHelper
 {
+    /// <summary>
+    /// Encrypt an string.
+    /// </summary>
+    /// <param name="str">The string to encrypt.</param>
+    /// <returns>The value encrypted.</returns>
     public static string Encrypt(string str)
     {
         SHA256 sha256 = SHA256.Create();

@@ -3,8 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EasyBills.Infrastructure.Data.Configurations;
+
+/// <summary>
+/// Category entity configuration.
+/// </summary>
 public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
+    /// <summary>
+    /// Configure category entity.
+    /// </summary>
+    /// <param name="builder">Category builder.</param>
     public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder.HasKey(c => c.Id);

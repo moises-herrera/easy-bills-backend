@@ -4,9 +4,16 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace EasyBills.Api.Authorization;
 
+/// <summary>
+/// Authorization attribute for controllers.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizationAttribute : Attribute, IAuthorizationFilter
 {
+    /// <summary>
+    /// Confirm if the request is authorized.
+    /// </summary>
+    /// <param name="context">Authorization context</param>
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var allowAnonymous = context.ActionDescriptor
