@@ -1,6 +1,7 @@
 ﻿namespace EasyBills.Application.Email;
 
-public class EmailDTO
-{
-    public string Recipient { get; set; }
-}
+/// <summary>
+/// Email DTO.
+/// </summary>
+/// <param name="Recipient">Recipient email address.</param>
+public record EmailDTO(string Recipient);

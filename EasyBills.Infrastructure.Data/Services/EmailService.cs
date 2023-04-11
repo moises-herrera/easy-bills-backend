@@ -5,15 +5,33 @@ using MimeKit;
 using MimeKit.Text;
 
 namespace EasyBills.Infrastructure.Data.Services;
+
+/// <summary>
+/// Email service for sending emails.
+/// </summary>
 public class EmailService : IEmailService
 {
+    /// <summary>
+    /// Object to get the configuration from the appsettings.json
+    /// </summary>
     private readonly IConfiguration _configuration;
 
+    /// <summary>
+    /// Initialize a new instance of <see cref="EmailService"/> class
+    /// </summary>
+    /// <param name="configuration">Configuration object.</param>
     public EmailService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Send email.
+    /// </summary>
+    /// <param name="to">Recipient email.</param>
+    /// <param name="subject">Email subject.</param>
+    /// <param name="body">Email body.</param>
+    /// <returns>Task result.</returns>
     public async Task Send(string to, string subject, string body)
     {
         var appSettings = _configuration.GetSection("AppSettings");

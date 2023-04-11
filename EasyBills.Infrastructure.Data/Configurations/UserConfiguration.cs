@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EasyBills.Infrastructure.Data.Configurations;
 
+/// <summary>
+/// User entity configuration.
+/// </summary>
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
+    /// <summary>
+    /// Configure user entity.
+    /// </summary>
+    /// <param name="builder">User builder.</param>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(u => u.Id);

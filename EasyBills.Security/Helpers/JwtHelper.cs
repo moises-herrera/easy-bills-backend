@@ -6,8 +6,17 @@ using System.Text;
 
 namespace EasyBills.Security.Helpers;
 
+/// <summary>
+/// JWT common methods.
+/// </summary>
 public class JwtHelper
 {
+    /// <summary>
+    /// Get secret key from the appsettings.
+    /// </summary>
+    /// <param name="configuration">Configuration object.</param>
+    /// <returns>The secret key.</returns>
+    /// <exception cref="Exception"></exception>
     public static string GetSecretKey(IConfiguration configuration)
     {
         string secretKey = configuration.GetSection("AppSettings").GetSection("JwtSecretKey").Value ?? throw new Exception("JwtSecretKey is not configured");
@@ -15,6 +24,15 @@ public class JwtHelper
         return secretKey;
     }
 
+    /// <summary>
+    /// Create a JWT from user data.
+    /// </summary>
+    /// <param name="configuration">Configuration object.</param>
+    /// <param name="id">User id.</param>
+    /// <param name="fullName">Full name.</param>
+    /// <param name="email">Email.</param>
+    /// <param name="tokenLifeTime">Token life time.</param>
+    /// <returns>Token.</returns>
     public static string CreateJWT(IConfiguration configuration, string id, string fullName, string email, int tokenLifeTime)
     {
         string secretKey = GetSecretKey(configuration);
@@ -33,6 +51,12 @@ public class JwtHelper
         return serializedToken;
     }
 
+    /// <summary>
+    /// Validate a JWT.
+    /// </summary>
+    /// <param name="configuration">Configuration object.</param>
+    /// <param name="token">JSON Web token.</param>
+    /// <returns>The user id if valid, null otherwise.</returns>
     public static string? ValidateJWT(IConfiguration configuration, string token)
     {
         if (string.IsNullOrWhiteSpace(token)) return null;
@@ -65,6 +89,13 @@ public class JwtHelper
         }
     }
 
+    /// <summary>
+    /// Generate claims identity.
+    /// </summary>
+    /// <param name="id">Id.</param>
+    /// <param name="fullName">Full name.</param>
+    /// <param name="email">Email.</param>
+    /// <returns>The identity object.</returns>
     public static ClaimsIdentity GenerateIdentity(string id, string fullName, string email)
     {
         var identity = new ClaimsIdentity();

@@ -2,10 +2,16 @@
 
 namespace EasyBills.Application.Categories;
 
-public class CategoryDTO
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public List<Transaction> Transactions { get; set; }
-}
+/// <summary>
+/// Category DTO for render data.
+/// </summary>
+/// <param name="Id">Id.</param>
+/// <param name="Name">Category name.</param>
+/// <param name="Description">Category description.</param>
+/// <param name="Transactions">Transactions.</param>
+public record CategoryDTO(
+    Guid Id,
+    string Name,
+    string Description,
+    List<Transaction> Transactions
+    );

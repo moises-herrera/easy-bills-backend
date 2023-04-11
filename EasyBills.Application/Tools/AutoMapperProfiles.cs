@@ -5,8 +5,14 @@ using EasyBills.Domain.Entities;
 
 namespace EasyBills.Application.Tools;
 
+/// <summary>
+/// Auto mapper profiles used for mapping the entities.
+/// </summary>
 public class AutoMapperProfiles : Profile
 {
+    /// <summary>
+    /// Create mapping configuration.
+    /// </summary>
     public AutoMapperProfiles()
     {
         CreateMap<User, UserDTO>();

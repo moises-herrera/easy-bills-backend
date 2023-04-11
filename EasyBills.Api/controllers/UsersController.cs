@@ -10,14 +10,34 @@ using EasyBills.Domain.Interfaces;
 
 namespace EasyBills.Api.Controllers;
 
+/// <summary>
+/// The controller for all user actions.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
+    /// <summary>
+    /// User repository to handle user actions.
+    /// </summary>
     private readonly IUserRepository _userRepository;
+
+    /// <summary>
+    /// Object used to get the configuration from the appsettings.
+    /// </summary>
     private readonly IConfiguration _configuration;
+
+    /// <summary>
+    /// The mapper used to transform an object into a different type.
+    /// </summary>
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UsersController"/> class.
+    /// </summary>
+    /// <param name="userRepository">The user repository instance.</param>
+    /// <param name="configuration">The object to get the configuration from the appsettings.json</param>
+    /// <param name="mapper">Mapper instance.</param>
     public UsersController(
         IUserRepository userRepository, 
         IConfiguration configuration, 
@@ -28,6 +48,12 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Get all users.
+    /// </summary>
+    /// <returns>A list of users.</returns>
+    [ProducesResponseType(typeof(List<UserDTO>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
     [Authorization]
     [HttpGet]
     public async Task<List<UserDTO>> GetUsers()
@@ -37,15 +63,38 @@ public class UsersController : ControllerBase
         return _mapper.Map<List<UserDTO>>(users);
     }
 
+    /// <summary>
+    /// Get a user by id.
+    /// </summary>
+    /// <param name="id">User id.</param>
+    /// <returns>The user.</returns>
+    /// <response code="404">If the user does not exist.</response>s
+    [ProducesResponseType(typeof(UserDTO), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.NotFound)]
     [Authorization]
     [HttpGet("{id:guid}")]
-    public async Task<UserDTO> GetUserById(Guid id)
+    public async Task<ActionResult<UserDTO>> GetUserById(Guid id)
     {
         var user = await _userRepository.GetById(id);
+
+        if (user is null)
+        {
+            return NotFound(new ErrorResponse { Error = "El usuario no existe" });
+        }
 
         return _mapper.Map<UserDTO>(user);
     }
 
+    /// <summary>
+    /// Create a user.
+    /// </summary>
+    /// <param name="createUserDTO">Object with user data.</param>
+    /// <returns>No content response</returns>
+    /// <response code="204">If the user was created.</response>
+    /// <response code="400">If the email was already taken.</response>
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
     [HttpPost]
     public async Task<ActionResult> CreateUser(CreateUserDTO createUserDTO)
     {
@@ -66,6 +115,17 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Update a user by id.
+    /// </summary>
+    /// <param name="updateUserDTO">Object with user data.</param>
+    /// <param name="id">User id.</param>
+    /// <returns>No content response.</returns>
+    /// <response code="204">If the user was updated.</response>
+    /// <response code="404">If the user does not exist.</response>
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.NotFound)]
     [Authorization]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateUser(CreateUserDTO updateUserDTO, Guid id)
@@ -85,6 +145,16 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Delete a user by id.
+    /// </summary>
+    /// <param name="id">User id.</param>
+    /// <returns>No content response.</returns>
+    /// <response code="204">If the user was deleted.</response>
+    /// <response code="404">If the user does not exist.</response>
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.NotFound)]
     [Authorization]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteUser(Guid id)
@@ -102,6 +172,14 @@ public class UsersController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Login a user.
+    /// </summary>
+    /// <param name="loginUserDTO">User credentials.</param>
+    /// <returns>Response with <see cref="LoginUserDTO"/> model.</returns>
+    [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
     [HttpPost("login")]
     public async Task<ActionResult> Login(LoginUserDTO loginUserDTO)
     {

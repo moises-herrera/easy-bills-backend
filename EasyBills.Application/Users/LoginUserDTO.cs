@@ -1,7 +1,10 @@
 ﻿namespace EasyBills.Application.Users;
 
-public class LoginUserDTO
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-}
+/// <summary>
+/// DTO for the user login.
+/// </summary>
+/// <param name="Email">User email</param>
+/// <param name="Password">User password.</param>
+public record LoginUserDTO(
+    string Email, 
+    string Password);

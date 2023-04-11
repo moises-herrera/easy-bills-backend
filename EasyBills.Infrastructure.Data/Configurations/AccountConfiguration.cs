@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EasyBills.Infrastructure.Data.Configurations;
 
+/// <summary>
+/// Account entity configuration.
+/// </summary>
 public class AccountConfiguration : IEntityTypeConfiguration<Account>
 {
+    /// <summary>
+    /// Configure account entity.
+    /// </summary>
+    /// <param name="builder">Account builder.</param>
     public void Configure(EntityTypeBuilder<Account> builder)
     {
         builder.HasKey(a => a.Id);
