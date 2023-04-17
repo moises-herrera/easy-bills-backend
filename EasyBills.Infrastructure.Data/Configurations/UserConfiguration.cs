@@ -1,4 +1,5 @@
 ﻿using EasyBills.Domain.Entities;
+using EasyBills.Domain.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -36,5 +37,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.IsEmailVerified)
             .HasDefaultValue(false);
+
+        builder.Property(u => u.Role)
+            .HasDefaultValue(UserRole.User);
     }
 }

@@ -1,4 +1,4 @@
-﻿using EasyBills.Domain.Entities;
+﻿using EasyBills.Domain.Entities.Enums;
 
 namespace EasyBills.Application.Users;
 
@@ -11,10 +11,12 @@ namespace EasyBills.Application.Users;
 /// <param name="Email">Email address.</param>
 /// <param name="Password">Password.</param>
 /// <param name="IsEmailVerified">If the email is verified.</param>
+/// <param name="Role">Role of the user.</param>
 public record UserDTO(
     Guid Id, 
     string FirstName, 
     string LastName, 
     string Email, 
     string Password, 
-    bool IsEmailVerified);
+    bool IsEmailVerified,
+    UserRole Role);

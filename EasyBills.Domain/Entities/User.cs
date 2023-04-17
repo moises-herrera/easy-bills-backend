@@ -1,4 +1,5 @@
 ﻿using EasyBills.Core.Entity;
+using EasyBills.Domain.Entities.Enums;
 using EasyBills.Security.Helpers;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -35,6 +36,11 @@ public class User : Entity
     public bool IsEmailVerified { get; set; }
 
     /// <summary>
+    /// Role of the user.
+    /// </summary>
+    public UserRole Role { get; set; }
+
+    /// <summary>
     /// Finance accounts.
     /// </summary>
     public List<Account> Accounts { get; set; }
@@ -49,6 +55,11 @@ public class User : Entity
     /// </summary>
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
+
+    /// <summary>
+    /// If the user is admin.
+    /// </summary>
+    public bool IsAdmin => Role == UserRole.Admin;
 
     /// <summary>
     /// Validate if the password passed as parameter is equal to the current password.

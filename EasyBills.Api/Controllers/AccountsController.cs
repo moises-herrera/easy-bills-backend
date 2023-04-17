@@ -22,6 +22,11 @@ public class AccountsController : ControllerBase
     private readonly IAccountRepository _accountRepository;
 
     /// <summary>
+    /// User repository to handle all the user actions.
+    /// </summary>
+    private readonly IUserRepository _userRepository;
+
+    /// <summary>
     /// The mapper used to transform an object into a different type.
     /// </summary>
     private readonly IMapper _mapper;
@@ -30,10 +35,12 @@ public class AccountsController : ControllerBase
     /// Initializes a new instance of the <see cref="AccountsController"/> class.
     /// </summary>
     /// <param name="accountRepository">The account repository instance.</param>
+    /// <param name="userRepository">The user repository instance.</param>
     /// <param name="mapper">Mapper instance.</param>
-    public AccountsController(IAccountRepository accountRepository, IMapper mapper)
+    public AccountsController(IAccountRepository accountRepository, IUserRepository userRepository, IMapper mapper)
     {
         _accountRepository = accountRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
     }
 
@@ -47,7 +54,18 @@ public class AccountsController : ControllerBase
     [HttpGet]
     public async Task<List<AccountDTO>> GetAccounts()
     {
-        var accounts = await _accountRepository.GetAll();
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+        IEnumerable<Account> accounts;
+
+        if (user.IsAdmin)
+        {
+            accounts = await _accountRepository.GetAll();
+        } 
+        else
+        {
+            accounts = await _accountRepository.GetAll(a => a.UserId == userId);
+        }
 
         return _mapper.Map<List<AccountDTO>>(accounts);
     }
@@ -65,7 +83,10 @@ public class AccountsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<AccountDTO> GetAccountById(Guid id)
     {
-        var account = await _accountRepository.GetById(id);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+
+        var account = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || user.IsAdmin));
 
         return _mapper.Map<AccountDTO>(account);
     }
@@ -82,9 +103,9 @@ public class AccountsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateAccount(CreateAccountDTO createAccountDTO)
     {
-        var category = _mapper.Map<Account>(createAccountDTO);
+        var account = _mapper.Map<Account>(createAccountDTO);
 
-        _accountRepository.Add(category);
+        _accountRepository.Add(account);
         await _accountRepository.SaveChanges();
 
         return NoContent();
@@ -105,6 +126,16 @@ public class AccountsController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateAccount(CreateAccountDTO createAccountDTO, Guid id)
     {
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+
+        var existingAccount = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || user.IsAdmin));
+
+        if (existingAccount is null)
+        {
+            return NotFound(new ErrorResponse { Error = "La cuenta no existe" });
+        }
+
         var account = _mapper.Map<Account>(createAccountDTO);
         account.Id = id;
         _accountRepository.Update(account);
@@ -127,7 +158,9 @@ public class AccountsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteAccount(Guid id)
     {
-        var account = await _accountRepository.GetById(id);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+        var account = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || user.IsAdmin));
 
         if (account is null)
         {

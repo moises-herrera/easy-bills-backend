@@ -22,6 +22,11 @@ public class CategoriesController : ControllerBase
     private readonly ICategoryRepository _categoryRepository;
 
     /// <summary>
+    /// User repository to handle all the user actions.
+    /// </summary>
+    private readonly IUserRepository _userRepository;
+
+    /// <summary>
     /// The mapper used to transform an object into a different type.
     /// </summary>
     private readonly IMapper _mapper;
@@ -30,10 +35,12 @@ public class CategoriesController : ControllerBase
     /// Initializes a new instance of the <see cref="CategoriesController"/> class.
     /// </summary>
     /// <param name="categoryRepository">The category repository instance.</param>
+    /// <param name="userRepository">The user repository instance.</param>
     /// <param name="mapper">Mapper instance.</param>
-    public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
+    public CategoriesController(ICategoryRepository categoryRepository, IUserRepository userRepository, IMapper mapper)
     {
         _categoryRepository = categoryRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
     }
 
@@ -47,7 +54,18 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     public async Task<List<CategoryDTO>> GetCategories()
     {
-        var categories = await _categoryRepository.GetAll();
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+        IEnumerable<Category> categories;
+
+        if (user.IsAdmin)
+        {
+            categories = await _categoryRepository.GetAll();
+        }
+        else
+        {
+            categories = await _categoryRepository.GetAll(c => c.UserId == userId || c.UserId == null);
+        }
 
         return _mapper.Map<List<CategoryDTO>>(categories);
     }
@@ -65,7 +83,10 @@ public class CategoriesController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<CategoryDTO> GetCategoryById(Guid id)
     {
-        var category = await _categoryRepository.GetById(id);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+
+        var category = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
 
         return _mapper.Map<CategoryDTO>(category);
     }
@@ -84,7 +105,9 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateCategory(CreateCategoryDTO createCategoryDTO)
     {
-        var existingCategory = await _categoryRepository.GetOne(category => category.Name == createCategoryDTO.Name);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+        var existingCategory = await _categoryRepository.GetOne(c => c.Name == createCategoryDTO.Name && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
 
         if (existingCategory is not null)
         {
@@ -116,7 +139,10 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateCategory(CreateCategoryDTO createCategoryDTO, Guid id)
     {
-        var existingCategory = await _categoryRepository.GetById(id);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+
+        var existingCategory = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
 
         if (existingCategory is null)
         {
@@ -145,7 +171,10 @@ public class CategoriesController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteCategory(Guid id)
     {
-        var category = await _categoryRepository.GetById(id);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var user = await _userRepository.GetById(userId);
+
+        var category = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
 
         if (category is null)
         {

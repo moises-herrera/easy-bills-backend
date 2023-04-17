@@ -131,6 +131,13 @@ public class UsersController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateUser(CreateUserDTO updateUserDTO, Guid id)
     {
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var currentUser = await _userRepository.GetById(userId);
+
+        if (currentUser is not null && !currentUser.IsAdmin && userId != id)
+        {
+            return Unauthorized(new ErrorResponse { Error = "No tienes acceso" });
+        }
         var existingUser = await _userRepository.GetById(id);
 
         if (existingUser is null)
@@ -160,6 +167,20 @@ public class UsersController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteUser(Guid id)
     {
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+
+        if (userId == id)
+        {
+            return BadRequest(new ErrorResponse { Error = "No puedes realizar esta acción" });
+        }
+
+        var currentUser = await _userRepository.GetById(userId);
+
+        if (currentUser is not null && !currentUser.IsAdmin && userId != id)
+        {
+            return Unauthorized(new ErrorResponse { Error = "No tienes acceso" });
+        }
+
         var user = await _userRepository.GetById(id);
 
         if (user is null)
