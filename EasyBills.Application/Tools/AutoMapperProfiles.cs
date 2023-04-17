@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EasyBills.Application.Accounts;
 using EasyBills.Application.Categories;
+using EasyBills.Application.Transactions;
 using EasyBills.Application.Users;
 using EasyBills.Domain.Entities;
 
@@ -22,5 +23,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<CreateCategoryDTO, Category>();
         CreateMap<Account, AccountDTO>();
         CreateMap<CreateAccountDTO, Account>();
+        CreateMap<Transaction, TransactionDTO>();
+        CreateMap<CreateTransactionDTO, Transaction>();
     }
 }
