@@ -4,8 +4,8 @@ using EasyBills.Domain.Entities;
 namespace EasyBills.Domain.Interfaces;
 
 /// <summary>
-/// User repository interface.
+/// Account repository interface.
 /// </summary>
-public interface IUserRepository : IRepositoryBase<User>
+public interface IAccountRepository : IRepositoryBase<Account>
 {
 }

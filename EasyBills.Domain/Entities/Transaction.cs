@@ -12,21 +12,18 @@ public class Transaction : Entity
     /// </summary>
     /// <param name="amount">Amount.</param>
     /// <param name="description">Description.</param>
-    /// <param name="userId">User id.</param>
     /// <param name="accountId">Account id.</param>
     /// <param name="categoryId">Category id.</param>
     /// <param name="isIncome">If is an income.</param>
     public Transaction(
         decimal amount,
         string description,
-        Guid userId,
         Guid accountId,
         Guid categoryId,
         bool isIncome)
     {
         Amount = amount;
         Description = description;
-        UserId = userId;
         AccountId = accountId;
         CategoryId = categoryId;
         CreatedDate = DateTime.UtcNow;
@@ -44,19 +41,24 @@ public class Transaction : Entity
     public string Description { get; set; }
 
     /// <summary>
-    /// User id.
-    /// </summary>
-    public Guid UserId { get; set; }
-
-    /// <summary>
     /// Account id.
     /// </summary>
     public Guid AccountId { get; set; }
 
     /// <summary>
+    /// The account that made the transaction.
+    /// </summary>
+    public Account Account { get; set; }
+
+    /// <summary>
     /// Category id.
     /// </summary>
     public Guid CategoryId { get; set; }
+
+    /// <summary>
+    /// The category of the transaction.
+    /// </summary>
+    public Category Category { get; set; }
 
     /// <summary>
     /// Created date of the transaction.

@@ -10,9 +10,10 @@ public class Category : Entity
     /// <summary>
     /// Initialize a new instance of <see cref="Category"/> class.
     /// </summary>
-    public Category(string name, string? description)
+    public Category(string name, Guid? userId, string? description)
     {
         Name = name;
+        UserId = userId;
         Description = description;
         Transactions = new List<Transaction>();
     }
@@ -26,6 +27,16 @@ public class Category : Entity
     /// Description.
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// User id.
+    /// </summary>
+    public Guid? UserId { get; set; }
+
+    /// <summary>
+    /// User.
+    /// </summary>
+    public User? User { get; set; }
 
     /// <summary>
     /// Transactions.

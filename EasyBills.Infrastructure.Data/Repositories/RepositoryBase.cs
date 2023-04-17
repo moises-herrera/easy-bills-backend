@@ -1,4 +1,5 @@
 ﻿using EasyBills.Core.Entity;
+using EasyBills.Core.Interfaces;
 using EasyBills.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

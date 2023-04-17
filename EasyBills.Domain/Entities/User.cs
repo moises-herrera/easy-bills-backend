@@ -10,23 +10,6 @@ namespace EasyBills.Domain.Entities;
 public class User : Entity
 {
     /// <summary>
-    /// Initialize a new instance of <see cref="User"/> class.
-    /// </summary>
-    /// <param name="firstName">First name.</param>
-    /// <param name="lastName">Last name.</param>
-    /// <param name="email">Email.</param>
-    /// <param name="password">Password.</param>
-    public User(string firstName, string lastName, string email, string password)
-    {
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
-        Password = password;
-        IsEmailVerified = false;
-        Transactions = new List<Transaction>();
-    }
-
-    /// <summary>
     /// First name.
     /// </summary>
     public string FirstName { get; set; }
@@ -42,25 +25,9 @@ public class User : Entity
     public string Email { get; set; }
 
     /// <summary>
-    /// Password field.
-    /// </summary>
-    [NotMapped]
-    private string _password = null!;
-
-    /// <summary>
     /// Property used to encrypt the password value.
     /// </summary>
-    public string Password
-    { 
-        get
-        {
-            return _password;
-        } 
-        set 
-        {
-            _password = EncryptionHelper.Encrypt(value);
-        }
-    }
+    public string Password { get; set; }
 
     /// <summary>
     /// If the email is verified.
@@ -68,9 +35,14 @@ public class User : Entity
     public bool IsEmailVerified { get; set; }
 
     /// <summary>
-    /// Transactions.
+    /// Finance accounts.
     /// </summary>
-    public List<Transaction> Transactions { get; set; }
+    public List<Account> Accounts { get; set; }
+
+    /// <summary>
+    /// Custom categories.
+    /// </summary>
+    public List<Category>? Categories { get; set; }
 
     /// <summary>
     /// Full name.

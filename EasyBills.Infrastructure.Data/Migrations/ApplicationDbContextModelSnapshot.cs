@@ -37,7 +37,12 @@ namespace EasyBills.Infrastructure.Data.Migrations
                     b.Property<int>("TypeAccount")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Accounts");
                 });
@@ -49,12 +54,20 @@ namespace EasyBills.Infrastructure.Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
                 });
@@ -79,22 +92,18 @@ namespace EasyBills.Infrastructure.Data.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
                     b.Property<bool>("IsIncome")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Transactions");
                 });
@@ -110,6 +119,7 @@ namespace EasyBills.Infrastructure.Data.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
@@ -135,25 +145,43 @@ namespace EasyBills.Infrastructure.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("EasyBills.Domain.Entities.Account", b =>
+                {
+                    b.HasOne("EasyBills.Domain.Entities.User", "User")
+                        .WithMany("Accounts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EasyBills.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("EasyBills.Domain.Entities.User", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EasyBills.Domain.Entities.Transaction", b =>
                 {
-                    b.HasOne("EasyBills.Domain.Entities.Account", null)
+                    b.HasOne("EasyBills.Domain.Entities.Account", "Account")
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyBills.Domain.Entities.Category", null)
+                    b.HasOne("EasyBills.Domain.Entities.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyBills.Domain.Entities.User", null)
-                        .WithMany("Transactions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Account");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("EasyBills.Domain.Entities.Account", b =>
@@ -168,7 +196,9 @@ namespace EasyBills.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("EasyBills.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Transactions");
+                    b.Navigation("Accounts");
+
+                    b.Navigation("Categories");
                 });
 #pragma warning restore 612, 618
         }

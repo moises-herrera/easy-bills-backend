@@ -28,7 +28,7 @@ public class UsersController : ControllerBase
     private readonly IConfiguration _configuration;
 
     /// <summary>
-    /// The mapper used to transform an object into a different type.
+    /// The _mapper used to transform an object into a different type.
     /// </summary>
     private readonly IMapper _mapper;
 
@@ -106,8 +106,9 @@ public class UsersController : ControllerBase
                 new ErrorResponse { Error = "Ya existe una cuenta con ese email" }
                 );
         }
-
+ 
         var user = _mapper.Map<User>(createUserDTO);
+        user.Password = EncryptionHelper.Encrypt(user.Password);
 
         _userRepository.Add(user);
         await _userRepository.SaveChanges();
@@ -188,7 +189,7 @@ public class UsersController : ControllerBase
         try
         {
             var user = await _userRepository.GetOne(user => user.Email == loginUserDTO.Email);
-
+            
             if (user is null || !user.IsValidPassword(loginUserDTO.Password))
             {
                 var message = "Usuario o contraseña invalidos";

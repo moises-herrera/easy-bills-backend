@@ -14,11 +14,12 @@ public class Account : Entity
     /// <param name="name">Name.</param>
     /// <param name="typeAccount">Type of account.</param>
     /// <param name="balance">Balance amount.</param>
-    public Account(string name, FinanceAccountType typeAccount, decimal balance)
+    public Account(string name, FinanceAccountType typeAccount, decimal balance, Guid userId)
     {
         Name = name;
         TypeAccount = typeAccount;
         Balance = balance;
+        UserId = userId;
         Transactions = new List<Transaction>();
     }
 
@@ -36,6 +37,16 @@ public class Account : Entity
     /// Current balance.
     /// </summary>
     public decimal Balance { get; set; }
+
+    /// <summary>
+    /// User id.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
+    /// Account owner.
+    /// </summary>
+    public User User { get; set; }
 
     /// <summary>
     /// Transactions.

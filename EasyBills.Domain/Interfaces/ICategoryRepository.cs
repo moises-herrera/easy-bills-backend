@@ -1,5 +1,5 @@
-﻿using EasyBills.Domain.Entities;
-using EasyBills.Infrastructure.Data.Repositories;
+﻿using EasyBills.Core.Interfaces;
+using EasyBills.Domain.Entities;
 
 namespace EasyBills.Domain.Interfaces;
 

@@ -1,7 +1,7 @@
 ﻿using EasyBills.Core.Entity;
 using System.Linq.Expressions;
 
-namespace EasyBills.Infrastructure.Data.Repositories;
+namespace EasyBills.Core.Interfaces;
 
 /// <summary>
 /// Repository base interface.
