@@ -148,7 +148,7 @@ public class UsersController : ControllerBase
         var user = _mapper.Map<User>(updateUserDTO);
         user.Id = id;
         user.Password = EncryptionHelper.Encrypt(user.Password);
-
+        
         _userRepository.Update(user);
         await _userRepository.SaveChanges();
 
