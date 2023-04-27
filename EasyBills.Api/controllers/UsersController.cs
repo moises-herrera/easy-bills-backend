@@ -95,7 +95,7 @@ public class UsersController : ControllerBase
     /// <response code="400">If the email was already taken.</response>
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<ActionResult> CreateUser(CreateUserDTO createUserDTO)
     {
         var existingUser = await _userRepository.GetOne(user => user.Email == createUserDTO.Email);
