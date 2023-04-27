@@ -236,4 +236,38 @@ public class UsersController : ControllerBase
 
         return Ok(loginResponse);
     }
+
+    /// <summary>
+    /// Validate access token.
+    /// </summary>
+    /// <returns>Response with <see cref="LoginUserDTO"/> model.</returns>
+    [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
+    [Authorization]
+    [HttpGet("renew-token")]
+    public async Task<ActionResult> ValidateAccessToken()
+    {
+        try
+        {
+            var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+
+            var user = await _userRepository.GetById(userId);
+
+            if (user is null)
+            {
+                return Unauthorized(new ErrorResponse { Error = "No tienes acceso" });
+            }
+
+            var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.tokenLifeTimeInMinutes);
+            var response = new LoginResponse { User = _mapper.Map<UserDTO>(user), AccessToken = token };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            var message = $"Error al validar el token: {ex.Message}";
+            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
+        }
+    }
 }
