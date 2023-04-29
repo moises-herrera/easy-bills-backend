@@ -1,4 +1,8 @@
-﻿namespace EasyBills.Application.Transactions;
+﻿using EasyBills.Application.Accounts;
+using EasyBills.Application.Categories;
+using EasyBills.Domain.Entities.Enums;
+
+namespace EasyBills.Application.Transactions;
 
 /// <summary>
 /// Trasaction DTO to render data.
@@ -6,14 +10,14 @@
 /// <param name="Id">Transaction id.</param>
 /// <param name="Amount">Amount.</param>
 /// <param name="Description">Description.</param>
-/// <param name="AccountId">Account id.</param>
-/// <param name="CategoryId">Category id.</param>
-/// <param name="IsIncome">If is an income.</param>
+/// <param name="Account">Account.</param>
+/// <param name="Category">Category.</param>
+/// <param name="TransactionType">Type of the transaction.</param>
 public record TransactionDTO(
     Guid Id,
     decimal Amount,
     string Description,
-    Guid AccountId,
-    Guid CategoryId,
-    bool IsIncome
+    AccountDTO Account,
+    CategoryDTO Category,
+    TransactionType TransactionType
     );

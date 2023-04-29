@@ -39,7 +39,8 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     /// <returns>All records.</returns>
     /// <exception cref="Exception"></exception>
     public virtual async Task<IEnumerable<T>> GetAll(
-        Expression<Func<T, bool>>? filter = null)
+        Expression<Func<T, bool>>? filter = null,
+        string include = "")
     {
         try
         {
@@ -48,6 +49,14 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
             if (filter is not null)
             {
                 records = records.Where(filter);
+            }
+
+            var includedProperties = include.Split(
+                new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var property in includedProperties)
+            {
+                records = records.Include(property);
             }
 
             return await records.ToListAsync();
@@ -65,11 +74,21 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     /// <param name="find">Find expression.</param>
     /// <returns>A record.</returns>
     /// <exception cref="Exception"></exception>
-    public virtual Task<T?> GetOne(Expression<Func<T, bool>> find)
+    public virtual Task<T?> GetOne(Expression<Func<T, bool>> find, string include = "")
     {
         try
         {
-            return DBSet.FirstOrDefaultAsync(find);
+            IQueryable<T> record = DBSet;
+
+            var includedProperties = include.Split(
+                new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var property in includedProperties)
+            {
+                record = record.Include(property);
+            }
+
+            return record.FirstOrDefaultAsync(find);
         }
         catch (Exception ex)
         {
@@ -83,9 +102,9 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     /// </summary>
     /// <param name="id">Id.</param>
     /// <returns>A record.</returns>
-    public virtual Task<T?> GetById(Guid id)
+    public virtual Task<T?> GetById(Guid id, string include = "")
     {
-        return GetOne(e => e.Id == id);
+        return GetOne(e => e.Id == id, include);
     }
 
     /// <summary>

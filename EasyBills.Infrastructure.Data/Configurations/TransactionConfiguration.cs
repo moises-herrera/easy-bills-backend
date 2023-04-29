@@ -26,7 +26,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.Property(t => t.Description)
             .HasMaxLength(150);
 
-        builder.Property(t => t.IsIncome)
+        builder.Property(t => t.TransactionType)
             .IsRequired();
     }
 }

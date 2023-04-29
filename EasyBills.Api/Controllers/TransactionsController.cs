@@ -3,6 +3,7 @@ using EasyBills.Api.Authorization;
 using EasyBills.Api.Models;
 using EasyBills.Application.Transactions;
 using EasyBills.Domain.Entities;
+using EasyBills.Domain.Entities.Enums;
 using EasyBills.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -61,7 +62,7 @@ public class TransactionsController : ControllerBase
     [HttpGet]
     public async Task<List<TransactionDTO>> GetTransactions()
     {
-        var transactions = await _transactionRepository.GetAll();
+        var transactions = await _transactionRepository.GetAll(null, "Account,Category");
 
         return _mapper.Map<List<TransactionDTO>>(transactions);
     }
@@ -79,9 +80,9 @@ public class TransactionsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<TransactionDTO> GetTransactionById(Guid id)
     {
-        var account = await _transactionRepository.GetById(id);
+        var transaction = await _transactionRepository.GetById(id, "Account,Category");
 
-        return _mapper.Map<TransactionDTO>(account);
+        return _mapper.Map<TransactionDTO>(transaction);
     }
 
     /// <summary>
@@ -110,7 +111,7 @@ public class TransactionsController : ControllerBase
             return BadRequest(new ErrorResponse { Error = "La categoria no existe." });
         }
 
-        var isIncome = createTransactionDTO.IsIncome;
+        var isIncome = createTransactionDTO.TransactionType == TransactionType.Income;
 
         account.Balance += isIncome ? createTransactionDTO.Amount : -createTransactionDTO.Amount;
         _accountRepository.Update(account);
@@ -139,8 +140,22 @@ public class TransactionsController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateTransaction(CreateTransactionDTO createTransactionDTO, Guid id)
     {
+        var account = await _accountRepository.GetById(createTransactionDTO.AccountId);
+
+        if (account is null)
+        {
+            return BadRequest(new ErrorResponse { Error = "La cuenta no existe." });
+        }
+
+        var isIncome = createTransactionDTO.TransactionType == TransactionType.Income;
+
+        account.Balance += isIncome ? createTransactionDTO.Amount : -createTransactionDTO.Amount;
+        _accountRepository.Update(account);
+        await _accountRepository.SaveChanges();
+
         var transaction = _mapper.Map<Transaction>(createTransactionDTO);
         transaction.Id = id;
+
         _transactionRepository.Update(transaction);
         await _transactionRepository.SaveChanges();
 

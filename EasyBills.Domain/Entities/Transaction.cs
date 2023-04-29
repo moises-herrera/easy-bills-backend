@@ -1,4 +1,5 @@
 ﻿using EasyBills.Core.Entity;
+using EasyBills.Domain.Entities.Enums;
 
 namespace EasyBills.Domain.Entities;
 
@@ -14,20 +15,20 @@ public class Transaction : Entity
     /// <param name="description">Description.</param>
     /// <param name="accountId">Account id.</param>
     /// <param name="categoryId">Category id.</param>
-    /// <param name="isIncome">If is an income.</param>
+    /// <param name="transactionType">Transaction type.</param>
     public Transaction(
         decimal amount,
         string description,
         Guid accountId,
         Guid categoryId,
-        bool isIncome)
+        TransactionType transactionType)
     {
         Amount = amount;
         Description = description;
         AccountId = accountId;
         CategoryId = categoryId;
         CreatedDate = DateTime.UtcNow;
-        IsIncome = isIncome;
+        TransactionType = transactionType;
     }
 
     /// <summary>
@@ -66,7 +67,7 @@ public class Transaction : Entity
     public DateTime CreatedDate { get; set; }
 
     /// <summary>
-    /// If is an income.
+    /// Type of the transaction.
     /// </summary>
-    public bool IsIncome { get; set; }
+    public TransactionType TransactionType { get; set; }
 }

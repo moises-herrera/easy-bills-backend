@@ -1,6 +1,4 @@
-﻿using EasyBills.Domain.Entities;
-
-namespace EasyBills.Application.Categories;
+﻿namespace EasyBills.Application.Categories;
 
 /// <summary>
 /// Category DTO for render data.
@@ -11,13 +9,11 @@ namespace EasyBills.Application.Categories;
 /// <param name="Icon">Category color.</param>
 /// <param name="Description">Category description.</param>
 /// <param name="UserId">User id.</param>
-/// <param name="Transactions">Transactions.</param>
 public record CategoryDTO(
     Guid Id,
     string Name,
     string Icon,
     string Color,
     string? Description,
-    Guid? UserId,
-    List<Transaction> Transactions
+    Guid? UserId
     );
