@@ -2,6 +2,7 @@
 using EasyBills.Core.Interfaces;
 using EasyBills.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Linq.Expressions;
 
 namespace EasyBills.Infrastructure.Data.Repositories;

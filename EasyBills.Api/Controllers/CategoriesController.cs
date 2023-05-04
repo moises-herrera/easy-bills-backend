@@ -55,10 +55,10 @@ public class CategoriesController : ControllerBase
     public async Task<List<CategoryDTO>> GetCategories()
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
         IEnumerable<Category> categories;
 
-        if (user.IsAdmin)
+        if (isUserAdmin)
         {
             categories = await _categoryRepository.GetAll();
         }
@@ -84,9 +84,9 @@ public class CategoriesController : ControllerBase
     public async Task<CategoryDTO> GetCategoryById(Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
 
-        var category = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
+        var category = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || isUserAdmin));
 
         return _mapper.Map<CategoryDTO>(category);
     }
@@ -106,8 +106,8 @@ public class CategoriesController : ControllerBase
     public async Task<ActionResult> CreateCategory(CreateCategoryDTO createCategoryDTO)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
-        var existingCategory = await _categoryRepository.GetOne(c => c.Name == createCategoryDTO.Name && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
+        var existingCategory = await _categoryRepository.GetOne(c => c.Name == createCategoryDTO.Name && ((c.UserId == userId && c.UserId == null) || isUserAdmin));
 
         if (existingCategory is not null)
         {
@@ -140,9 +140,9 @@ public class CategoriesController : ControllerBase
     public async Task<ActionResult> UpdateCategory(CreateCategoryDTO createCategoryDTO, Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
 
-        var existingCategory = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
+        var existingCategory = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || isUserAdmin));
 
         if (existingCategory is null)
         {
@@ -172,9 +172,9 @@ public class CategoriesController : ControllerBase
     public async Task<ActionResult> DeleteCategory(Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
 
-        var category = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || user.IsAdmin));
+        var category = await _categoryRepository.GetOne(c => c.Id == id && ((c.UserId == userId && c.UserId == null) || isUserAdmin));
 
         if (category is null)
         {

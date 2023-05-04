@@ -10,10 +10,12 @@ namespace EasyBills.Application.Transactions;
 /// <param name="AccountId">Account id.</param>
 /// <param name="CategoryId">Category id.</param>
 /// <param name="TransactionType">Type of the transaction.</param>
+/// <param name="CreatedDate">Created date of the transaction.</param>
 public record CreateTransactionDTO(
     decimal Amount,
     string Description,
     Guid AccountId,
     Guid CategoryId,
-    TransactionType TransactionType
+    TransactionType TransactionType,
+    DateTime CreatedDate
     );

@@ -151,8 +151,7 @@ public class UsersController : ControllerBase
             !string.IsNullOrWhiteSpace(user.Password) 
                 ? EncryptionHelper.Encrypt(user.Password) 
                 : existingUser.Password;
-        
-        _userRepository.Update(user);
+
         await _userRepository.SaveChanges();
 
         return NoContent();
@@ -231,7 +230,7 @@ public class UsersController : ControllerBase
             loginResponse.AccessToken = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.tokenLifeTimeInMinutes);
             loginResponse.User = _mapper.Map<UserDTO>(user);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var message = $"Error al iniciar sesion";
             return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
@@ -267,7 +266,7 @@ public class UsersController : ControllerBase
 
             return Ok(response);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var message = $"Error al validar el token";
             return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });

@@ -8,4 +8,5 @@ namespace EasyBills.Domain.Interfaces;
 /// </summary>
 public interface IUserRepository : IRepositoryBase<User>
 {
+    Task<bool> IsUserAdmin(Guid userId);
 }

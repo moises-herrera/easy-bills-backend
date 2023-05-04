@@ -16,18 +16,20 @@ public class Transaction : Entity
     /// <param name="accountId">Account id.</param>
     /// <param name="categoryId">Category id.</param>
     /// <param name="transactionType">Transaction type.</param>
+    /// <param name="createdDate">Created date of the transaction.</param>
     public Transaction(
         decimal amount,
         string description,
         Guid accountId,
         Guid categoryId,
-        TransactionType transactionType)
+        TransactionType transactionType, 
+        DateTime createdDate)
     {
         Amount = amount;
         Description = description;
         AccountId = accountId;
         CategoryId = categoryId;
-        CreatedDate = DateTime.UtcNow;
+        CreatedDate = createdDate;
         TransactionType = transactionType;
     }
 

@@ -55,10 +55,10 @@ public class AccountsController : ControllerBase
     public async Task<List<AccountDTO>> GetAccounts()
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
         IEnumerable<Account> accounts;
 
-        if (user.IsAdmin)
+        if (isUserAdmin)
         {
             accounts = await _accountRepository.GetAll();
         } 
@@ -84,9 +84,9 @@ public class AccountsController : ControllerBase
     public async Task<AccountDTO> GetAccountById(Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
 
-        var account = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || user.IsAdmin));
+        var account = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || isUserAdmin));
 
         return _mapper.Map<AccountDTO>(account);
     }
@@ -127,9 +127,9 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult> UpdateAccount(CreateAccountDTO createAccountDTO, Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
 
-        var existingAccount = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || user.IsAdmin));
+        var existingAccount = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || isUserAdmin));
 
         if (existingAccount is null)
         {
@@ -159,8 +159,8 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult> DeleteAccount(Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
-        var user = await _userRepository.GetById(userId);
-        var account = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || user.IsAdmin));
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
+        var account = await _accountRepository.GetOne(a => a.Id == id && (a.UserId == userId || isUserAdmin));
 
         if (account is null)
         {
