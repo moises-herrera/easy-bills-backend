@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using EasyBills.Api.Authorization;
 using EasyBills.Api.Models;
+using EasyBills.Application.Categories;
 using EasyBills.Application.Transactions;
 using EasyBills.Domain.Entities;
 using EasyBills.Domain.Entities.Enums;
 using EasyBills.Domain.Interfaces;
+using EasyBills.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -33,6 +35,11 @@ public class TransactionsController : ControllerBase
     private readonly ICategoryRepository _categoryRepository;
 
     /// <summary>
+    /// User repository to handle all the user actions.
+    /// </summary>
+    private readonly IUserRepository _userRepository;
+
+    /// <summary>
     /// The mapper used to transform an object into a different type.
     /// </summary>
     private readonly IMapper _mapper;
@@ -43,12 +50,19 @@ public class TransactionsController : ControllerBase
     /// <param name="transactionRepository">The transaction repository instance.</param>
     /// <param name="accountRepository">The account repository instance.</param>
     /// <param name="categoryRepository">The category repository instance.</param>
+    /// <param name="userRepository">The user repository instance.</param>
     /// <param name="mapper">Mapper instance.</param>
-    public TransactionsController(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository, IMapper mapper)
+    public TransactionsController(
+        ITransactionRepository transactionRepository, 
+        IAccountRepository accountRepository, 
+        ICategoryRepository categoryRepository,
+        IUserRepository userRepository,
+        IMapper mapper)
     {
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
         _categoryRepository = categoryRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
     }
 
@@ -60,9 +74,30 @@ public class TransactionsController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
     [Authorization]
     [HttpGet]
-    public async Task<List<TransactionDTO>> GetTransactions()
+    public async Task<List<TransactionDTO>> GetTransactions(string from = "", string to = "", int limit = 0)
     {
-        var transactions = await _transactionRepository.GetAll(null, "Account,Category");
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
+        IEnumerable<Transaction> transactions;
+
+        if (isUserAdmin)
+        {
+            transactions = await _transactionRepository.GetAll(null, "Account,Category");
+        }
+        else
+        {
+            transactions = await _transactionRepository.GetAll(t => t.Account.UserId == userId, "Account,Category");
+        }
+
+        if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
+        {
+            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from) && t.CreatedDate <= DateTime.Parse(to)).ToList();
+        }
+
+        if (limit > 0)
+        {
+            transactions = transactions.Take(limit).ToList();
+        }
 
         return _mapper.Map<List<TransactionDTO>>(transactions);
     }
@@ -80,7 +115,10 @@ public class TransactionsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<TransactionDTO> GetTransactionById(Guid id)
     {
-        var transaction = await _transactionRepository.GetById(id, "Account,Category");
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
+
+        var transaction = await _transactionRepository.GetOne(t => t.Id == id && (t.Account.UserId == userId || isUserAdmin), "Account,Category");
 
         return _mapper.Map<TransactionDTO>(transaction);
     }
@@ -140,6 +178,16 @@ public class TransactionsController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> UpdateTransaction(CreateTransactionDTO createTransactionDTO, Guid id)
     {
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
+
+        var existingTransaction = await _transactionRepository.GetOne(t => t.Id == id && (t.Account.UserId == userId || isUserAdmin));
+
+        if (existingTransaction is null)
+        {
+            return NotFound(new ErrorResponse { Error = "La transaccion no existe" });
+        }
+
         var account = await _accountRepository.GetById(createTransactionDTO.AccountId);
 
         if (account is null)
@@ -176,16 +224,44 @@ public class TransactionsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteTransaction(Guid id)
     {
-        var transaction = await _transactionRepository.GetById(id);
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
 
-        if (transaction is null)
+        var existingTransaction = await _transactionRepository.GetOne(t => t.Id == id && (t.Account.UserId == userId || isUserAdmin));
+
+        if (existingTransaction is null)
         {
             return NotFound(new ErrorResponse { Error = "La transaccion no existe" });
         }
 
-        _transactionRepository.Remove(transaction);
+        _transactionRepository.Remove(existingTransaction);
         await _transactionRepository.SaveChanges();
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Get all the transactions grouped by category.
+    /// </summary>
+    /// <returns>Groups of transactions.</returns>
+    [ProducesResponseType(typeof(List<IGrouping<CategoryDTO, TransactionDTO>>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
+    [Authorization]
+    [HttpGet("group/category")]
+    public async Task<List<IGrouping<CategoryDTO, TransactionDTO>>> GetTransactionsByCategory(TransactionType transactionType = TransactionType.Spending, string from = "", string to = "")
+    {
+        var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
+        var isUserAdmin = await _userRepository.IsUserAdmin(userId);
+        var transactions = await _transactionRepository.GetAll(t => (t.Account.UserId == userId || isUserAdmin) && t.TransactionType == transactionType, "Category");
+
+        if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
+        {
+            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from) && t.CreatedDate <= DateTime.Parse(to));
+        }
+
+        var transactionsDTO = _mapper.Map<List<TransactionDTO>>(transactions);
+        var transactionsGroupedByCategory = transactionsDTO.GroupBy(t => t.Category).ToList();
+
+        return transactionsGroupedByCategory;
     }
 }
