@@ -147,7 +147,10 @@ public class UsersController : ControllerBase
 
         var user = _mapper.Map<User>(updateUserDTO);
         user.Id = id;
-        user.Password = EncryptionHelper.Encrypt(user.Password);
+        user.Password = 
+            !string.IsNullOrWhiteSpace(user.Password) 
+                ? EncryptionHelper.Encrypt(user.Password) 
+                : existingUser.Password;
         
         _userRepository.Update(user);
         await _userRepository.SaveChanges();
@@ -230,10 +233,10 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            var message = $"Error al iniciar sesion: {ex.Message}";
+            var message = $"Error al iniciar sesion";
             return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
         }
-
+        
         return Ok(loginResponse);
     }
 
@@ -266,7 +269,7 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            var message = $"Error al validar el token: {ex.Message}";
+            var message = $"Error al validar el token";
             return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
         }
     }
