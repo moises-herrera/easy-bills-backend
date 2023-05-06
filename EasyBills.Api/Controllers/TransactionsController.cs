@@ -91,7 +91,7 @@ public class TransactionsController : ControllerBase
 
         if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
         {
-            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from) && t.CreatedDate <= DateTime.Parse(to)).ToList();
+            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to)).ToList();
         }
 
         if (limit > 0)
@@ -256,7 +256,7 @@ public class TransactionsController : ControllerBase
 
         if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
         {
-            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from) && t.CreatedDate <= DateTime.Parse(to));
+            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to));
         }
 
         var transactionsDTO = _mapper.Map<List<TransactionDTO>>(transactions);
