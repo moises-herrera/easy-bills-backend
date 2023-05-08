@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var frontendUrl = builder.Configuration.GetSection("AppSettings").GetSection("FrontendUrl").Value;
 const string corsPolicy = "appCorsPolicy";
 builder.Services.AddCors(options =>
 {
@@ -21,7 +22,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:4200")
+                .WithOrigins(frontendUrl)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
