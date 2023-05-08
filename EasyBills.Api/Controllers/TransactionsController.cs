@@ -6,7 +6,6 @@ using EasyBills.Application.Transactions;
 using EasyBills.Domain.Entities;
 using EasyBills.Domain.Entities.Enums;
 using EasyBills.Domain.Interfaces;
-using EasyBills.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 

@@ -230,10 +230,10 @@ public class UsersController : ControllerBase
             loginResponse.AccessToken = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.tokenLifeTimeInMinutes);
             loginResponse.User = _mapper.Map<UserDTO>(user);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             var message = $"Error al iniciar sesion";
-            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
+            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message, Exception = ex.Message });
         }
         
         return Ok(loginResponse);
@@ -266,10 +266,10 @@ public class UsersController : ControllerBase
 
             return Ok(response);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             var message = $"Error al validar el token";
-            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
+            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message, Exception = ex.Message });
         }
     }
 }
