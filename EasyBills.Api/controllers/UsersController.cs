@@ -145,8 +145,19 @@ public class UsersController : ControllerBase
             return NotFound(new ErrorResponse { Error = "El usuario no existe" });
         }
 
+        if (updateUserDTO.Email != existingUser.Email)
+        {
+            var isEmailTaken = await _userRepository.GetOne(user => user.Email == updateUserDTO.Email);
+
+            if (isEmailTaken is not null)
+            {
+                return BadRequest(new ErrorResponse { Error = "Ya existe un usuario con ese email" });
+            }
+        }
+
         var user = _mapper.Map<User>(updateUserDTO);
         user.Id = id;
+        user.IsEmailVerified = user.IsEmailVerified && updateUserDTO.Email == existingUser.Email;
         user.Password = 
             !string.IsNullOrWhiteSpace(user.Password) 
                 ? EncryptionHelper.Encrypt(user.Password) 
@@ -221,13 +232,7 @@ public class UsersController : ControllerBase
                 return StatusCode((int)HttpStatusCode.Unauthorized, new ErrorResponse { Error = message });
             }
 
-            if (!user.IsEmailVerified)
-            {
-                var message = "Tu cuenta de usuario no ha sido verificada";
-                return StatusCode((int)HttpStatusCode.Unauthorized, new ErrorResponse { Error = message });
-            }
-
-            loginResponse.AccessToken = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.tokenLifeTimeInMinutes);
+            loginResponse.AccessToken = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.accessTokenLifeTimeInMinutes);
             loginResponse.User = _mapper.Map<UserDTO>(user);
         }
         catch (Exception ex)
@@ -261,7 +266,7 @@ public class UsersController : ControllerBase
                 return Unauthorized(new ErrorResponse { Error = "No tienes acceso" });
             }
 
-            var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.tokenLifeTimeInMinutes);
+            var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.accessTokenLifeTimeInMinutes);
             var response = new LoginResponse { User = _mapper.Map<UserDTO>(user), AccessToken = token };
 
             return Ok(response);
@@ -269,6 +274,37 @@ public class UsersController : ControllerBase
         catch (Exception ex)
         {
             var message = $"Error al validar el token";
+            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message, Exception = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Confirm user email.
+    /// </summary>
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
+    [Authorization]
+    [HttpPost("verify-email")]
+    public async Task<ActionResult> ConfirmUserEmail(string userId)
+    {
+        try
+        {
+            var user = await _userRepository.GetById(Guid.Parse(userId));
+
+            if (user is null)
+            {
+                return BadRequest(new ErrorResponse { Error = "Usuario no encontrado" });
+            }
+
+            user.IsEmailVerified = true;
+            _userRepository.Update(user);
+            await _userRepository.SaveChanges();
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            var message = $"Error al verificar el email";
             return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message, Exception = ex.Message });
         }
     }

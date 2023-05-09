@@ -6,7 +6,12 @@
 public static class Constants
 {
     /// <summary>
-    /// The token life time in minutes.
+    /// The access token life time in minutes.
     /// </summary>
-    public static readonly int tokenLifeTimeInMinutes = 1440;
+    public static readonly int accessTokenLifeTimeInMinutes = 1440;
+
+    /// <summary>
+    /// The email verification token life time in minutes.
+    /// </summary>
+    public static readonly int emailVerificationTokenLifeTimeInMinutes = 10;
 }
