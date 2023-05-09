@@ -63,6 +63,7 @@ public class EmailController : ControllerBase
             var user = await _userRepository.GetOne(user => user.Email == emailData.Recipient);
             var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.emailVerificationTokenLifeTimeInMinutes);
             var frontendUrl = _configuration.GetSection("AppSettings").GetSection("FrontendUrl").Value;
+            emailBody = emailBody.Replace("%FRONTEND_URL%", $"{frontendUrl}");
             emailBody = emailBody.Replace("%VERIFY_LINK%", $"{frontendUrl}/auth/confirm-email?userId={user.Id}&token={token}");
             await _emailService.Send(
                 emailData.Recipient,
