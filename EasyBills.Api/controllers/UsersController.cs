@@ -163,6 +163,7 @@ public class UsersController : ControllerBase
                 ? EncryptionHelper.Encrypt(user.Password) 
                 : existingUser.Password;
 
+        _userRepository.Update(user);
         await _userRepository.SaveChanges();
 
         return NoContent();
