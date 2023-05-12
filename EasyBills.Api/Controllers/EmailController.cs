@@ -62,7 +62,7 @@ public class EmailController : ControllerBase
         try
         {
             var emailBody = System.IO.File.ReadAllText(
-                $@"{_env.WebRootPath}\wwwroot\EmailTemplates\ConfirmEmail.html");
+                $@"{_env.WebRootPath}\EmailTemplates\ConfirmEmail.html");
             var user = await _userRepository.GetOne(user => user.Email == emailData.Recipient);
             var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.emailVerificationTokenLifeTimeInMinutes);
             var frontendUrl = _configuration.GetSection("AppSettings").GetSection("FrontendUrl").Value;
