@@ -52,12 +52,11 @@ public class EmailController : ControllerBase
     public async Task<ActionResult> SendUserEmailConfirmation(
         EmailDTO emailData)
     {
-        var baseDirectory = Environment.CurrentDirectory;
-        var emailBody = System.IO.File.ReadAllText(
-        $@"{baseDirectory}\EmailTemplates\ConfirmEmail.html");
-
         try
         {
+            var baseDirectory = Environment.CurrentDirectory;
+            var emailBody = System.IO.File.ReadAllText(
+                $@"{baseDirectory}\EmailTemplates\ConfirmEmail.html");
             var user = await _userRepository.GetOne(user => user.Email == emailData.Recipient);
             var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.emailVerificationTokenLifeTimeInMinutes);
             var frontendUrl = _configuration.GetSection("AppSettings").GetSection("FrontendUrl").Value;
