@@ -22,6 +22,10 @@
     <ProjectReference Include="..\EasyBills.Infrastructure.Data\EasyBills.Infrastructure.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\EmailTemplates\ConfirmEmail.html" />
+  </ItemGroup>
+
   <PropertyGroup>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<NoWarn>$(NoWarn);1591</NoWarn>

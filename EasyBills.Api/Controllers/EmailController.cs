@@ -31,16 +31,23 @@ public class EmailController : ControllerBase
     private readonly IConfiguration _configuration;
 
     /// <summary>
+    /// The web environment.
+    /// </summary>
+    private readonly IWebHostEnvironment _env;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="EmailController"/> class.
     /// </summary>
     /// <param name="emailService">The email service instance.</param>
     /// <param name="userRepository">The user repository instance.</param>
     /// <param name="configuration">The object to get the configuration from the appsettings.json</param>
-    public EmailController(IEmailService emailService, IUserRepository userRepository, IConfiguration configuration)
+    /// <param name="env">The object to get the web environment.</param>
+    public EmailController(IEmailService emailService, IUserRepository userRepository, IConfiguration configuration, IWebHostEnvironment env)
     {
         _emailService = emailService;
         _userRepository = userRepository;
         _configuration = configuration;
+        _env = env;
     }
 
     /// <summary>
@@ -56,7 +63,7 @@ public class EmailController : ControllerBase
         {
             var baseDirectory = Environment.CurrentDirectory;
             var emailBody = System.IO.File.ReadAllText(
-                $@"{baseDirectory}\EmailTemplates\ConfirmEmail.html");
+                $@"{_env.WebRootPath}\EmailTemplates\ConfirmEmail.html");
             var user = await _userRepository.GetOne(user => user.Email == emailData.Recipient);
             var token = JwtHelper.CreateJWT(_configuration, user.Id.ToString(), user.FullName, user.Email, Constants.emailVerificationTokenLifeTimeInMinutes);
             var frontendUrl = _configuration.GetSection("AppSettings").GetSection("FrontendUrl").Value;
