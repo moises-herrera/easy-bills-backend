@@ -1,11 +1,9 @@
 ﻿using EasyBills.Api.Models;
 using EasyBills.Application.Email;
 using EasyBills.Core.Interfaces;
-using EasyBills.Domain.Entities;
 using EasyBills.Domain.Interfaces;
 using EasyBills.Security.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Net;
 
 namespace EasyBills.Api.Controllers;

@@ -121,15 +121,15 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="updateUserDTO">Object with user data.</param>
     /// <param name="id">User id.</param>
-    /// <returns>No content response.</returns>
+    /// <returns>The user updated.</returns>
     /// <response code="204">If the user was updated.</response>
     /// <response code="404">If the user does not exist.</response>
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(UserDTO), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.NotFound)]
     [Authorization]
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateUser(CreateUserDTO updateUserDTO, Guid id)
+    public async Task<ActionResult<UserDTO>> UpdateUser(CreateUserDTO updateUserDTO, Guid id)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
         var currentUser = await _userRepository.GetById(userId);
@@ -166,7 +166,9 @@ public class UsersController : ControllerBase
         _userRepository.Update(user);
         await _userRepository.SaveChanges();
 
-        return NoContent();
+        var userDTO = _mapper.Map<UserDTO>(user);
+
+        return Ok(userDTO);
     }
 
     /// <summary>
