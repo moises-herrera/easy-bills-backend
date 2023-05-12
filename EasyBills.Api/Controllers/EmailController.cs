@@ -61,7 +61,6 @@ public class EmailController : ControllerBase
     {
         try
         {
-            var baseDirectory = Environment.CurrentDirectory;
             var emailBody = System.IO.File.ReadAllText(
                 $@"{_env.WebRootPath}\EmailTemplates\ConfirmEmail.html");
             var user = await _userRepository.GetOne(user => user.Email == emailData.Recipient);
