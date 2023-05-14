@@ -90,13 +90,15 @@ public class TransactionsController : ControllerBase
 
         if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
         {
-            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to)).ToList();
+            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to));
         }
 
         if (limit > 0)
         {
-            transactions = transactions.Take(limit).ToList();
+            transactions = transactions.Take(limit);
         }
+
+        transactions = transactions.OrderByDescending(t => t.CreatedDate).ToList();
 
         return _mapper.Map<List<TransactionDTO>>(transactions);
     }
