@@ -196,9 +196,13 @@ public class TransactionsController : ControllerBase
             return BadRequest(new ErrorResponse { Error = "La cuenta no existe." });
         }
 
+        var newAmount = existingTransaction.TransactionType == createTransactionDTO.TransactionType 
+            ? Math.Abs(existingTransaction.Amount - createTransactionDTO.Amount)
+            : existingTransaction.Amount + createTransactionDTO.Amount;
+
         var isIncome = createTransactionDTO.TransactionType == TransactionType.Income;
 
-        account.Balance += isIncome ? createTransactionDTO.Amount : -createTransactionDTO.Amount;
+        account.Balance += isIncome ? newAmount : -newAmount;
         _accountRepository.Update(account);
         await _accountRepository.SaveChanges();
 
@@ -234,6 +238,14 @@ public class TransactionsController : ControllerBase
         {
             return NotFound(new ErrorResponse { Error = "La transaccion no existe" });
         }
+
+        var account = await _accountRepository.GetById(existingTransaction.AccountId);
+
+        var isIncome = existingTransaction.TransactionType == TransactionType.Income;
+
+        account.Balance += isIncome ? -existingTransaction.Amount : existingTransaction.Amount;
+        _accountRepository.Update(account);
+        await _accountRepository.SaveChanges();
 
         _transactionRepository.Remove(existingTransaction);
         await _transactionRepository.SaveChanges();
