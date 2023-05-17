@@ -45,7 +45,11 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     /// <exception cref="Exception"></exception>
     public virtual async Task<IEnumerable<T>> GetAll(
         Expression<Func<T, bool>>? filter = null,
-        string include = "", int pageNumber = 1, int pageSize = 10)
+        string include = "", 
+        int pageNumber = 1, 
+        int pageSize = 10,
+        string orderBy = "",
+        bool orderAsc = false)
     {
         try
         {
@@ -54,6 +58,17 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
             if (filter is not null)
             {
                 records = records.Where(filter);
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                var param = Expression.Parameter(typeof(T));
+                var memberAccess = Expression.Property(param, orderBy);
+                var convertedMemberAccess = Expression.Convert(memberAccess, typeof(object));
+                var orderPredicate = Expression.Lambda<Func<T, object>>(convertedMemberAccess, param);
+                records = orderAsc
+                    ? records.OrderBy(orderPredicate)
+                    : records.OrderByDescending(orderPredicate);
             }
 
             var includedProperties = include.Split(
