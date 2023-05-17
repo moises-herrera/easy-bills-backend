@@ -79,21 +79,12 @@ public class TransactionsController : ControllerBase
         var isUserAdmin = await _userRepository.IsUserAdmin(userId);
         IEnumerable<Transaction> transactions;
 
-        if (isUserAdmin)
-        {
-            transactions = await _transactionRepository.GetAll(null, "Account,Category", pageNumber, pageSize);
-        }
-        else
-        {
-            transactions = await _transactionRepository.GetAll(t => t.Account.UserId == userId, "Account,Category", pageNumber, pageSize);
-        }
-
-        if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
-        {
-            transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to));
-        }
-
-        transactions = transactions.OrderByDescending(t => t.CreatedDate).ToList();
+        transactions = await _transactionRepository.GetAll(t =>
+            (t.Account.UserId == userId || isUserAdmin) &&
+            (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to)
+                    ? t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to)
+                    : true),
+                    "Account,Category", pageNumber, pageSize, "CreatedDate");
 
         var totalRecords = await _transactionRepository.Count();
         var list = _mapper.Map<List<TransactionDTO>>(transactions);
