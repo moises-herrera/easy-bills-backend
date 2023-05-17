@@ -15,7 +15,13 @@ public interface IRepositoryBase<T> where T : IEntity
     /// <param name="filter">Filter expression.</param>
     /// <param name="include">Properties to include.</param>
     /// <returns>All the records.</returns>
-    Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, string include = "");
+    Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, string include = "", int pageNumber = 1, int pageSize = 10);
+
+    /// <summary>
+    /// Count all the records.
+    /// </summary>
+    /// <returns>The number of all the records.</returns>
+    Task<int> Count();
 
     /// <summary>
     /// Get a record by id.

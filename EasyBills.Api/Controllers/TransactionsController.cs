@@ -69,11 +69,11 @@ public class TransactionsController : ControllerBase
     /// Get all the transactions.
     /// </summary>
     /// <returns>A list of transactions.</returns>
-    [ProducesResponseType(typeof(List<TransactionDTO>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ActionResult<PagedResponse<List<TransactionDTO>>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
     [Authorization]
     [HttpGet]
-    public async Task<List<TransactionDTO>> GetTransactions(string from = "", string to = "", int limit = 0)
+    public async Task<ActionResult<PagedResponse<List<TransactionDTO>>>> GetTransactions(string from = "", string to = "", int pageNumber = 1, int pageSize = 10)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
         var isUserAdmin = await _userRepository.IsUserAdmin(userId);
@@ -81,11 +81,11 @@ public class TransactionsController : ControllerBase
 
         if (isUserAdmin)
         {
-            transactions = await _transactionRepository.GetAll(null, "Account,Category");
+            transactions = await _transactionRepository.GetAll(null, "Account,Category", pageNumber, pageSize);
         }
         else
         {
-            transactions = await _transactionRepository.GetAll(t => t.Account.UserId == userId, "Account,Category");
+            transactions = await _transactionRepository.GetAll(t => t.Account.UserId == userId, "Account,Category", pageNumber, pageSize);
         }
 
         if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
@@ -93,14 +93,12 @@ public class TransactionsController : ControllerBase
             transactions = transactions.Where(t => t.CreatedDate >= DateTime.Parse(from).Date && t.CreatedDate <= DateTime.Parse(to));
         }
 
-        if (limit > 0)
-        {
-            transactions = transactions.Take(limit);
-        }
-
         transactions = transactions.OrderByDescending(t => t.CreatedDate).ToList();
 
-        return _mapper.Map<List<TransactionDTO>>(transactions);
+        var totalRecords = await _transactionRepository.Count();
+        var list = _mapper.Map<List<TransactionDTO>>(transactions);
+
+        return Ok(new PagedResponse<List<TransactionDTO>>(list, pageNumber, pageSize, totalRecords));
     }
 
     /// <summary>

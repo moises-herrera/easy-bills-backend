@@ -2,8 +2,10 @@
 using EasyBills.Api.Authorization;
 using EasyBills.Api.Models;
 using EasyBills.Application.Accounts;
+using EasyBills.Application.Categories;
 using EasyBills.Domain.Entities;
 using EasyBills.Domain.Interfaces;
+using EasyBills.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -48,11 +50,11 @@ public class AccountsController : ControllerBase
     /// Get all accounts.
     /// </summary>
     /// <returns>A list of accounts.</returns>
-    [ProducesResponseType(typeof(List<AccountDTO>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ActionResult<PagedResponse<List<AccountDTO>>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
     [Authorization]
     [HttpGet]
-    public async Task<List<AccountDTO>> GetAccounts()
+    public async Task<ActionResult<PagedResponse<List<AccountDTO>>>> GetAccounts(int pageNumber = 1, int pageSize = 10)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
         var isUserAdmin = await _userRepository.IsUserAdmin(userId);
@@ -60,14 +62,17 @@ public class AccountsController : ControllerBase
 
         if (isUserAdmin)
         {
-            accounts = await _accountRepository.GetAll();
+            accounts = await _accountRepository.GetAll(pageNumber: pageNumber, pageSize: pageSize);
         } 
         else
         {
-            accounts = await _accountRepository.GetAll(a => a.UserId == userId);
+            accounts = await _accountRepository.GetAll(a => a.UserId == userId, pageNumber: pageNumber, pageSize: pageSize);
         }
 
-        return _mapper.Map<List<AccountDTO>>(accounts);
+        var totalRecords = await _accountRepository.Count();
+        var list = _mapper.Map<List<AccountDTO>>(accounts);
+
+        return Ok(new PagedResponse<List<AccountDTO>>(list, pageNumber, pageSize, totalRecords));
     }
 
     /// <summary>

@@ -3,6 +3,7 @@ using EasyBills.Core.Interfaces;
 using EasyBills.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace EasyBills.Infrastructure.Data.Repositories;
@@ -37,11 +38,14 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     /// Get all the records.
     /// </summary>
     /// <param name="filter">Filter expression.</param>
+    /// <param name="include">The properties to include.</param>
+    /// <param name="pageNumber">The page number.</param>
+    /// <param name="pageSize">The page size.</param>
     /// <returns>All records.</returns>
     /// <exception cref="Exception"></exception>
     public virtual async Task<IEnumerable<T>> GetAll(
         Expression<Func<T, bool>>? filter = null,
-        string include = "")
+        string include = "", int pageNumber = 1, int pageSize = 10)
     {
         try
         {
@@ -60,7 +64,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
                 records = records.Include(property);
             }
 
-            return await records.ToListAsync();
+            return await records.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -139,5 +143,14 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     {
         DbContext.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Count all the records
+    /// </summary>
+    /// <returns>The number of all the records.</returns>
+    public Task<int> Count()
+    {
+        return DBSet.CountAsync();
     }
 }

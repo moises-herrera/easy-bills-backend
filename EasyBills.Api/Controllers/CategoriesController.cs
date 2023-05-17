@@ -2,8 +2,10 @@
 using EasyBills.Api.Authorization;
 using EasyBills.Api.Models;
 using EasyBills.Application.Categories;
+using EasyBills.Application.Transactions;
 using EasyBills.Domain.Entities;
 using EasyBills.Domain.Interfaces;
+using EasyBills.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -27,6 +29,11 @@ public class CategoriesController : ControllerBase
     private readonly IUserRepository _userRepository;
 
     /// <summary>
+    /// The transation repository to handle transation actions.
+    /// </summary>
+    private readonly ITransactionRepository _transactionRepository;
+
+    /// <summary>
     /// The mapper used to transform an object into a different type.
     /// </summary>
     private readonly IMapper _mapper;
@@ -36,11 +43,13 @@ public class CategoriesController : ControllerBase
     /// </summary>
     /// <param name="categoryRepository">The category repository instance.</param>
     /// <param name="userRepository">The user repository instance.</param>
+    /// <param name="transactionRepository">The transaction repository instance.</param>
     /// <param name="mapper">Mapper instance.</param>
-    public CategoriesController(ICategoryRepository categoryRepository, IUserRepository userRepository, IMapper mapper)
+    public CategoriesController(ICategoryRepository categoryRepository, IUserRepository userRepository, ITransactionRepository transactionRepository, IMapper mapper)
     {
         _categoryRepository = categoryRepository;
         _userRepository = userRepository;
+        _transactionRepository = transactionRepository;
         _mapper = mapper;
     }
 
@@ -48,11 +57,11 @@ public class CategoriesController : ControllerBase
     /// Get all categories.
     /// </summary>
     /// <returns>A list of categories.</returns>
-    [ProducesResponseType(typeof(List<CategoryDTO>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ActionResult<PagedResponse<List<CategoryDTO>>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.Unauthorized)]
     [Authorization]
     [HttpGet]
-    public async Task<List<CategoryDTO>> GetCategories()
+    public async Task<ActionResult<PagedResponse<List<CategoryDTO>>>> GetCategories(int pageNumber = 1, int pageSize = 10)
     {
         var userId = Guid.Parse(Request.HttpContext.Items["UserId"].ToString());
         var isUserAdmin = await _userRepository.IsUserAdmin(userId);
@@ -60,14 +69,17 @@ public class CategoriesController : ControllerBase
 
         if (isUserAdmin)
         {
-            categories = await _categoryRepository.GetAll();
+            categories = await _categoryRepository.GetAll(pageNumber: pageNumber, pageSize: pageSize);
         }
         else
         {
-            categories = await _categoryRepository.GetAll(c => c.UserId == userId || c.UserId == null);
+            categories = await _categoryRepository.GetAll(c => c.UserId == userId || c.UserId == null, pageNumber: pageNumber, pageSize: pageSize);
         }
 
-        return _mapper.Map<List<CategoryDTO>>(categories);
+        var totalRecords = await _categoryRepository.Count();
+        var list = _mapper.Map<List<CategoryDTO>>(categories);
+
+        return Ok(new PagedResponse<List<CategoryDTO>>(list, pageNumber, pageSize, totalRecords));
     }
 
     /// <summary>
@@ -179,6 +191,13 @@ public class CategoriesController : ControllerBase
         if (category is null)
         {
             return NotFound(new ErrorResponse { Error = "La categoria no existe" });
+        }
+
+        var transactions = await _transactionRepository.GetAll(t => t.CategoryId == category.Id);
+
+        if (transactions.Count() > 0)
+        {
+            return BadRequest(new ErrorResponse { Error = "Existen transacciones registradas con esta categoria" });
         }
 
         _categoryRepository.Remove(category);
