@@ -75,10 +75,10 @@ public class EmailController : ControllerBase
 
             return Ok();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var message = "Ha ocurrido un error al enviar el email";
-            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message, Exception = ex.Message });
+            return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorResponse { Error = message });
         }
     }
 }

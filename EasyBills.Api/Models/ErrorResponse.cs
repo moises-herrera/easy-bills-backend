@@ -9,9 +9,4 @@ public class ErrorResponse
     /// Error message.
     /// </summary>
     public string Error { get; set; }
-
-    /// <summary>
-    /// Exception message.
-    /// </summary>
-    public string? Exception { get; set; }
 }
