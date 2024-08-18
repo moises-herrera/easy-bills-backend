@@ -2,8 +2,6 @@
 using EasyBills.Core.Interfaces;
 using EasyBills.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace EasyBills.Infrastructure.Data.Repositories;
@@ -30,8 +28,8 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : Entity
     /// <param name="dbContext">App db context.</param>
     public RepositoryBase(ApplicationDbContext dbContext)
     {
-        this.DbContext = dbContext;
-        this.DBSet = dbContext.Set<T>();
+        DbContext = dbContext;
+        DBSet = dbContext.Set<T>();
     }
 
     /// <summary>
